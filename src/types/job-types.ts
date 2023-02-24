@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export enum JobTypeEnum {
   FullTime = "full-time",
   PartTime = "part-time",
@@ -14,7 +12,7 @@ export enum JobStatusEnum {
 }
 
 export interface IJobType {
-  userId: mongoose.Types.ObjectId;
+  userId: string;
   position: string;
   company: string;
   status: JobStatusEnum;
