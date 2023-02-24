@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { isHttpError } from "http-errors";
 import HttpException from "../util/http-exception";
 import env from "../util/validate-env";
 
