@@ -8,7 +8,7 @@ import {
 
 const jobSchema = new Schema<IJobType>(
   {
-    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    // userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
     position: {
       type: String,
       required: true,
