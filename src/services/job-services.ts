@@ -1,5 +1,6 @@
 import JobModel from "../models/job-model";
 import { IJobType, IJobSchema } from "../types/job-types";
+import checkIsValidObjectID from "../util/check-is-valid-object-id";
 
 export const getJobs = async (): Promise<IJobSchema[]> => {
   try {
@@ -16,6 +17,8 @@ export const getJobs = async (): Promise<IJobSchema[]> => {
 };
 
 export const getJobByID = async (jobID: string): Promise<IJobSchema> => {
+  checkIsValidObjectID(jobID);
+
   try {
     const job = await JobModel.findById(jobID);
 
@@ -43,6 +46,8 @@ export const updateJob = async (
   jobID: string,
   job: IJobType
 ): Promise<IJobSchema> => {
+  checkIsValidObjectID(jobID);
+
   try {
     const updateJob = await JobModel.findByIdAndUpdate(jobID, job, {
       new: true,
@@ -59,6 +64,7 @@ export const updateJob = async (
 };
 
 export const deleteJob = async (jobID: string): Promise<void> => {
+  checkIsValidObjectID(jobID);
   try {
     const job = await JobModel.findByIdAndDelete(jobID);
 

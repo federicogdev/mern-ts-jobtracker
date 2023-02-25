@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
-import mongoose from "mongoose";
 import * as JobServices from "../services/job-services";
-import JobModel from "../models/job-model";
 
 export const getJobs = expressAsyncHandler(
   async (req: Request, res: Response) => {
@@ -15,11 +13,6 @@ export const getJobs = expressAsyncHandler(
 export const getJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    if (!mongoose.isValidObjectId(id)) {
-      res.status(404);
-      throw new Error("ID not valid.");
-    }
 
     const job = await JobServices.getJobByID(id);
 
@@ -57,10 +50,6 @@ export const updateJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(id)) {
-      res.status(404);
-      throw new Error("ID not valid.");
-    }
     const { position, company, location, status, type } = req.body;
 
     if (!position) {
@@ -88,11 +77,6 @@ export const updateJob = expressAsyncHandler(
 export const deleteJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    if (!mongoose.isValidObjectId(id)) {
-      res.status(400);
-      throw new Error("ID not valid.");
-    }
 
     await JobServices.deleteJob(id);
 

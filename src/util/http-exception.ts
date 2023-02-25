@@ -7,6 +7,6 @@ export default class HttpException extends Error {
     super(message);
     this.status = status;
     this.message = message;
-    this.error = error || null;
+    this.error = error ?? null;
   }
 }
