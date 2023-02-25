@@ -53,9 +53,37 @@ export const createJob = expressAsyncHandler(
   }
 );
 
-export const updateJob = expressAsyncHandler((req: Request, res: Response) => {
-  res.status(200).json({ message: `Updated Job ${req.params.id}.` });
-});
+export const updateJob = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      res.status(404);
+      throw new Error("ID not valid.");
+    }
+    const { position, company, location, status, type } = req.body;
+
+    if (!position) {
+      res.status(400);
+      throw new Error("Position required.");
+    }
+
+    if (!company) {
+      res.status(404);
+      throw new Error("Company required.");
+    }
+
+    const job = await JobServices.updateJob(id, {
+      position,
+      company,
+      location,
+      status,
+      type,
+    });
+
+    res.status(200).json({ data: job });
+  }
+);
 
 export const deleteJob = expressAsyncHandler(
   async (req: Request, res: Response) => {

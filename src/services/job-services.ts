@@ -38,3 +38,22 @@ export const createJob = async (job: IJobType): Promise<IJobSchema> => {
     throw new Error("Job not created.");
   }
 };
+
+export const updateJob = async (
+  jobID: string,
+  job: IJobType
+): Promise<IJobSchema> => {
+  try {
+    const updateJob = await JobModel.findByIdAndUpdate(jobID, job, {
+      new: true,
+    });
+
+    if (!updateJob) {
+      throw new Error(`Job with ${jobID} ID not found.`);
+    }
+
+    return updateJob;
+  } catch (error) {
+    throw new Error("Job not updated.");
+  }
+};
