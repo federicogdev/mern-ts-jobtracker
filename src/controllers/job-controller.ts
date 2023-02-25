@@ -94,15 +94,8 @@ export const deleteJob = expressAsyncHandler(
       throw new Error("ID not valid.");
     }
 
-    const job = await JobModel.findById(id);
+    await JobServices.deleteJob(id);
 
-    if (!job) {
-      res.status(404);
-      throw new Error("Job not found.");
-    }
-
-    await job.remove();
-
-    res.status(200).json({ message: `Delete Job ${req.params.id}.` });
+    res.status(200).json({ message: `Deleted Job ${req.params.id}.` });
   }
 );

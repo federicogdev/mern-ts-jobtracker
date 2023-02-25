@@ -57,3 +57,17 @@ export const updateJob = async (
     throw new Error("Job not updated.");
   }
 };
+
+export const deleteJob = async (jobID: string): Promise<void> => {
+  try {
+    const job = await JobModel.findByIdAndDelete(jobID);
+
+    if (!job) {
+      throw new Error(`Job with ${jobID} ID not found.`);
+    }
+
+    return;
+  } catch (error) {
+    throw new Error("Job not deleted.");
+  }
+};
