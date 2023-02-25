@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import mongoose from "mongoose";
+import * as JobServices from "../services/job-services";
 import JobModel from "../models/job-model";
 
-export const getJobs = expressAsyncHandler((req: Request, res: Response) => {
-  res.status(200).json({ message: "Get all Jobs." });
-});
+export const getJobs = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    const jobs = await JobServices.getJobs();
+
+    res.status(200).json({ data: jobs });
+  }
+);
 
 export const getJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
