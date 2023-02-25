@@ -51,6 +51,7 @@ export const updateJob = async (
   try {
     const updateJob = await JobModel.findByIdAndUpdate(jobID, job, {
       new: true,
+      runValidators: true,
     });
 
     if (!updateJob) {

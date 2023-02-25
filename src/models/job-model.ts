@@ -12,10 +12,14 @@ const jobSchema = new Schema<IJobType>(
     position: {
       type: String,
       required: true,
-      max: 100,
+      max: [100, "Company must be less than 100 characters."],
       trim: true,
     },
-    company: { type: String, required: true, max: 50 },
+    company: {
+      type: String,
+      required: true,
+      max: [100, "Company must be less than 100 characters."],
+    },
     status: {
       type: String,
       enum: Object.values(JobStatusEnum),
