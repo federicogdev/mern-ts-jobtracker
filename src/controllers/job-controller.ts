@@ -46,7 +46,7 @@ export const createJob = expressAsyncHandler(
       throw new Error("Company required.");
     }
 
-    const job = await JobModel.create({
+    const job = await JobServices.createJob({
       position,
       company,
       location,
