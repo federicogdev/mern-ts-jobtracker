@@ -1,7 +1,7 @@
 import JobModel from "../models/job-model";
-import { IJobType } from "../types/job-types";
+import { IJobType, IJobSchema } from "../types/job-types";
 
-export const getJobs = async (): Promise<IJobType[]> => {
+export const getJobs = async (): Promise<IJobSchema[]> => {
   try {
     const jobs = JobModel.find();
 
@@ -15,7 +15,21 @@ export const getJobs = async (): Promise<IJobType[]> => {
   }
 };
 
-export const createJob = async (job: IJobType): Promise<IJobType> => {
+export const getJobByID = async (jobID: string): Promise<IJobSchema> => {
+  try {
+    const job = await JobModel.findById(jobID);
+
+    if (!job) {
+      throw new Error(`Job with ${jobID} ID not found.`);
+    }
+
+    return job;
+  } catch (error) {
+    throw new Error("Job not found.");
+  }
+};
+
+export const createJob = async (job: IJobType): Promise<IJobSchema> => {
   try {
     const newJob = await JobModel.create(job);
 

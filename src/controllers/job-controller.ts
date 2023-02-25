@@ -21,12 +21,7 @@ export const getJob = expressAsyncHandler(
       throw new Error("ID not valid.");
     }
 
-    const job = await JobModel.findById(id);
-
-    if (!job) {
-      res.status(404);
-      throw new Error("Job not found.");
-    }
+    const job = await JobServices.getJobByID(id);
 
     res.status(200).json({ data: job });
   }
