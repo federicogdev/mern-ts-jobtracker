@@ -12,9 +12,7 @@ export const getJobs = expressAsyncHandler(
 
 export const getJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    const job = await JobServices.getJobByID(id);
+    const job = await JobServices.getJobByID(req.params.id);
 
     res.status(200).json({ data: job });
   }
@@ -22,25 +20,7 @@ export const getJob = expressAsyncHandler(
 
 export const createJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const { position, company, location, status, type } = req.body;
-
-    if (!position) {
-      res.status(400);
-      throw new Error("Position required.");
-    }
-
-    if (!company) {
-      res.status(404);
-      throw new Error("Company required.");
-    }
-
-    const job = await JobServices.createJob({
-      position,
-      company,
-      location,
-      status,
-      type,
-    });
+    const job = await JobServices.createJob(req.body);
 
     res.status(200).json({ data: job });
   }
@@ -48,27 +28,7 @@ export const createJob = expressAsyncHandler(
 
 export const updateJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    const { position, company, location, status, type } = req.body;
-
-    if (!position) {
-      res.status(400);
-      throw new Error("Position required.");
-    }
-
-    if (!company) {
-      res.status(404);
-      throw new Error("Company required.");
-    }
-
-    const job = await JobServices.updateJob(id, {
-      position,
-      company,
-      location,
-      status,
-      type,
-    });
+    const job = await JobServices.updateJob(req.params.id, req.body);
 
     res.status(200).json({ data: job });
   }
@@ -76,9 +36,7 @@ export const updateJob = expressAsyncHandler(
 
 export const deleteJob = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    await JobServices.deleteJob(id);
+    await JobServices.deleteJob(req.params.id);
 
     res.status(200).json({ message: `Deleted Job ${req.params.id}.` });
   }

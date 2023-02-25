@@ -3,6 +3,7 @@ import express from "express";
 
 import env from "./util/validate-env";
 import jobRoutes from "./routes/job-routes";
+import authRoutes from "./routes/auth-routes";
 import errorHandler from "./middleware/error-handler";
 import { dbConnect } from "./util/db-connect";
 
@@ -14,10 +15,7 @@ dbConnect();
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello" });
-});
-
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", jobRoutes);
 
 app.use(errorHandler);

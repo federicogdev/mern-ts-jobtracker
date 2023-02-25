@@ -33,8 +33,24 @@ export const getJobByID = async (jobID: string): Promise<IJobSchema> => {
 };
 
 export const createJob = async (job: IJobType): Promise<IJobSchema> => {
+  const { position, company, location, status, type } = job;
+
+  if (!position) {
+    throw new Error("Position required.");
+  }
+
+  if (!company) {
+    throw new Error("Company required.");
+  }
+
   try {
-    const newJob = await JobModel.create(job);
+    const newJob = await JobModel.create({
+      position,
+      company,
+      location,
+      status,
+      type,
+    });
 
     return newJob;
   } catch (error) {
@@ -48,17 +64,31 @@ export const updateJob = async (
 ): Promise<IJobSchema> => {
   checkIsValidObjectID(jobID);
 
-  try {
-    const updateJob = await JobModel.findByIdAndUpdate(jobID, job, {
-      new: true,
-      runValidators: true,
-    });
+  const { position, company, location, status, type } = job;
 
-    if (!updateJob) {
+  if (!position) {
+    throw new Error("Position required.");
+  }
+
+  if (!company) {
+    throw new Error("Company required.");
+  }
+
+  try {
+    const updatedJob = await JobModel.findByIdAndUpdate(
+      jobID,
+      { position, company, location, status, type },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedJob) {
       throw new Error(`Job with ${jobID} ID not found.`);
     }
 
-    return updateJob;
+    return updatedJob;
   } catch (error) {
     throw new Error("Job not updated.");
   }
@@ -66,6 +96,7 @@ export const updateJob = async (
 
 export const deleteJob = async (jobID: string): Promise<void> => {
   checkIsValidObjectID(jobID);
+
   try {
     const job = await JobModel.findByIdAndDelete(jobID);
 
