@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import JobModel from "../models/job-model";
 import { IJobType, IJobSchema } from "../types/job-types";
+import checkIsValidObjectId from "../util/check-is-valid-object-id";
 import checkIsValidObjectID from "../util/check-is-valid-object-id";
 import HttpException, { ErrorHandler } from "../util/http-exception";
 
@@ -30,19 +31,29 @@ export const getJobByID = async (jobID: string): Promise<IJobSchema> => {
   }
 };
 
-export const createJob = async (job: IJobType): Promise<IJobSchema> => {
+export const createJob = async (
+  job: IJobType,
+  userId: string | undefined
+): Promise<IJobSchema> => {
   const { position, company, location, status, type } = job;
 
+  if (!userId) {
+    throw new HttpException("UserId is undefined", 400);
+  }
+
+  checkIsValidObjectId(userId);
+
   if (!position) {
-    throw new Error("Position required.");
+    throw new Error("Position is required.");
   }
 
   if (!company) {
-    throw new Error("Company required.");
+    throw new Error("Company is required.");
   }
 
   try {
     const newJob = await JobModel.create({
+      userId,
       position,
       company,
       location,
