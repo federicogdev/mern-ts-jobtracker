@@ -2,11 +2,11 @@ import bcrypt from "bcryptjs";
 import UserModel from "../models/user-model";
 import checkIsValidObjectID from "../util/check-is-valid-object-id";
 import { IUserType, IUserSchema } from "../types/user-types";
+import { generateToken } from "../util/generate-token";
 
 interface IRegisterResponse {
   _id: string;
-  firstName: string;
-  lastName: string;
+  username: string;
   email: string;
   location: string;
   token: string;
@@ -15,7 +15,7 @@ interface IRegisterResponse {
 export const registerUser = async (
   user: IUserType
 ): Promise<IRegisterResponse> => {
-  const { email, password, firstName, lastName, location } = user;
+  const { email, password, username, location } = user;
 
   if (!email) {
     throw new Error("Email required.");
@@ -25,20 +25,15 @@ export const registerUser = async (
     throw new Error("Password required.");
   }
 
-  if (!firstName) {
-    throw new Error("FirstName required.");
-  }
-
-  if (!lastName) {
-    throw new Error("LastName required.");
+  if (!username) {
+    throw new Error("First Name required.");
   }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
     const newUser = await UserModel.create({
-      firstName,
-      lastName,
+      username,
       email,
       password: hashedPassword,
       location,
@@ -46,13 +41,12 @@ export const registerUser = async (
 
     return {
       _id: newUser._id,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
+      username: newUser.username,
       email: newUser.email,
       location: newUser.location,
-      token: "i",
+      token: generateToken({ _id: newUser._id }),
     };
   } catch (error) {
-    throw new Error("User not creatd.");
+    throw new Error("User not created.");
   }
 };

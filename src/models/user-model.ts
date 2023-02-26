@@ -4,20 +4,11 @@ import { emailRegex } from "../util/email-regex";
 
 const userSchema = new Schema<IUserType>(
   {
-    firstName: {
+    username: {
       type: String,
       required: [true, "First Name is required."],
-      unique: true,
       min: [3, "First Name must be at least 6 characters."],
       max: [20, "First Name must be less than 20 characters."],
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      required: [true, "Last Name is required."],
-      unique: true,
-      min: [3, "Last Name must be at least 6 characters."],
-      max: [20, "Last Name must be less than 20 characters."],
       trim: true,
     },
     email: {
