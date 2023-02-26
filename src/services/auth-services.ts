@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import UserModel from "../models/user-model";
 import checkIsValidObjectID from "../util/check-is-valid-object-id";
-import { IUserType, IUserSchema } from "../types/user-types";
+import { IUserType, IUserSchema, IUserReturnType } from "../types/user-types";
 import { generateToken } from "../util/generate-token";
+import HttpException from "../util/http-exception";
 
 interface IRegisterResponse {
   _id: string;
@@ -48,5 +49,42 @@ export const registerUser = async (
     };
   } catch (error) {
     throw new Error("User not created.");
+  }
+};
+
+export const loginUser = async (
+  email: string,
+  password: string
+): Promise<IUserReturnType> => {
+  if (!email) {
+    throw new Error("Email required.");
+  }
+
+  if (!password) {
+    throw new Error("Password required.");
+  }
+
+  try {
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.password);
+
+    if (!passwordValid) {
+      throw new Error("Password is invalid.");
+    }
+
+    return {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      location: user.location,
+      token: generateToken({ _id: user._id }),
+    };
+  } catch (error) {
+    throw new Error("User not found.");
   }
 };

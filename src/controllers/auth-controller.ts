@@ -4,7 +4,12 @@ import * as AuthServices from "../services/auth-services";
 
 export const login = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    res.status(200).json({ message: "Login" });
+    const user = await AuthServices.loginUser(
+      req.body.email,
+      req.body.password
+    );
+
+    res.status(202).json({ data: user });
   }
 );
 
