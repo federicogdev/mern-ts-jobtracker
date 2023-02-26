@@ -1,43 +1,33 @@
 import { Request, Response } from "express";
-import expressAsyncHandler from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import * as JobServices from "../services/job-services";
 
-export const getJobs = expressAsyncHandler(
-  async (req: Request, res: Response) => {
-    const jobs = await JobServices.getJobs();
+export const getJobs = asyncHandler(async (req: Request, res: Response) => {
+  const jobs = await JobServices.getJobs();
 
-    res.status(200).json({ data: jobs });
-  }
-);
+  res.status(200).json({ data: jobs });
+});
 
-export const getJob = expressAsyncHandler(
-  async (req: Request, res: Response) => {
-    const job = await JobServices.getJobByID(req.params.id);
+export const getJob = asyncHandler(async (req: Request, res: Response) => {
+  const job = await JobServices.getJobByID(req.params.id);
 
-    res.status(200).json({ data: job });
-  }
-);
+  res.status(200).json({ data: job });
+});
 
-export const createJob = expressAsyncHandler(
-  async (req: Request, res: Response) => {
-    const job = await JobServices.createJob(req.body);
+export const createJob = asyncHandler(async (req: Request, res: Response) => {
+  const job = await JobServices.createJob(req.body);
 
-    res.status(200).json({ data: job });
-  }
-);
+  res.status(200).json({ data: job });
+});
 
-export const updateJob = expressAsyncHandler(
-  async (req: Request, res: Response) => {
-    const job = await JobServices.updateJob(req.params.id, req.body);
+export const updateJob = asyncHandler(async (req: Request, res: Response) => {
+  const job = await JobServices.updateJob(req.params.id, req.body);
 
-    res.status(200).json({ data: job });
-  }
-);
+  res.status(200).json({ data: job });
+});
 
-export const deleteJob = expressAsyncHandler(
-  async (req: Request, res: Response) => {
-    await JobServices.deleteJob(req.params.id);
+export const deleteJob = asyncHandler(async (req: Request, res: Response) => {
+  await JobServices.deleteJob(req.params.id);
 
-    res.status(200).json({ message: `Deleted Job ${req.params.id}.` });
-  }
-);
+  res.status(200).json({ message: `Deleted Job ${req.params.id}.` });
+});
