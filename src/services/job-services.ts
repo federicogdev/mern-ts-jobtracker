@@ -5,9 +5,17 @@ import checkIsValidObjectId from "../util/check-is-valid-object-id";
 import checkIsValidObjectID from "../util/check-is-valid-object-id";
 import HttpException, { ErrorHandler } from "../util/http-exception";
 
-export const getJobs = async (): Promise<IJobSchema[]> => {
+export const getJobs = async (
+  userId: string | undefined
+): Promise<IJobSchema[]> => {
+  if (!userId) {
+    throw new HttpException("UserId is undefined", 400);
+  }
+
+  checkIsValidObjectId(userId);
+
   try {
-    const jobs = JobModel.find();
+    const jobs = JobModel.find({ userId });
 
     return jobs;
   } catch (error) {
@@ -15,14 +23,27 @@ export const getJobs = async (): Promise<IJobSchema[]> => {
   }
 };
 
-export const getJobByID = async (jobID: string): Promise<IJobSchema> => {
+export const getJobByID = async (
+  jobID: string,
+  userId: string | undefined
+): Promise<IJobSchema> => {
   checkIsValidObjectID(jobID);
+
+  if (!userId) {
+    throw new HttpException("UserId is undefined", 400);
+  }
+
+  checkIsValidObjectId(userId);
 
   try {
     const job = await JobModel.findById(jobID);
 
     if (!job) {
       throw new HttpException(`Job with ${jobID} ID not found.`, 404);
+    }
+
+    if (job.userId !== userId.toString()) {
+      throw new HttpException("Unauthorized", 404);
     }
 
     return job;
@@ -44,11 +65,11 @@ export const createJob = async (
   checkIsValidObjectId(userId);
 
   if (!position) {
-    throw new Error("Position is required.");
+    throw new HttpException("Position required.", 400);
   }
 
   if (!company) {
-    throw new Error("Company is required.");
+    throw new HttpException("Company required.", 400);
   }
 
   try {
@@ -69,24 +90,41 @@ export const createJob = async (
 
 export const updateJob = async (
   jobID: string,
-  job: IJobType
+  job: IJobType,
+  userId: string | undefined
 ): Promise<IJobSchema> => {
   checkIsValidObjectID(jobID);
 
   const { position, company, location, status, type } = job;
 
   if (!position) {
-    throw new Error("Position required.");
+    throw new HttpException("Position required.", 400);
   }
 
   if (!company) {
-    throw new Error("Company required.");
+    throw new HttpException("Company required.", 400);
+  }
+
+  if (!userId) {
+    throw new HttpException("UserId is undefined", 400);
+  }
+
+  checkIsValidObjectId(userId);
+
+  const _job = await JobModel.findById(jobID);
+
+  if (!_job) {
+    throw new HttpException(`Job with ${jobID} ID not found.`, 404);
+  }
+
+  if (_job.userId !== userId.toString()) {
+    throw new HttpException("Unauthorized", 404);
   }
 
   try {
     const updatedJob = await JobModel.findByIdAndUpdate(
       jobID,
-      { position, company, location, status, type },
+      { position, company, location, status, type, userId },
       {
         new: true,
         runValidators: true,
@@ -94,7 +132,7 @@ export const updateJob = async (
     );
 
     if (!updatedJob) {
-      throw new Error(`Job with ${jobID} ID not found.`);
+      throw new HttpException(`Job with ${jobID} ID not found.`, 400);
     }
 
     return updatedJob;
@@ -121,7 +159,7 @@ export const deleteJob = async (
     throw new HttpException(`Job with ${jobID} ID not found.`, 404);
   }
 
-  if (job.userId !== userId) {
+  if (job.userId !== userId.toString()) {
     throw new HttpException("Unauthorized", 404);
   }
 

@@ -3,17 +3,21 @@ import asyncHandler from "express-async-handler";
 import { IAuthorizedUserRequest } from "../middleware/auth-middleware";
 import * as JobServices from "../services/job-services";
 
-export const getJobs = asyncHandler(async (req: Request, res: Response) => {
-  const jobs = await JobServices.getJobs();
+export const getJobs = asyncHandler(
+  async (req: IAuthorizedUserRequest, res: Response) => {
+    const jobs = await JobServices.getJobs(req.user?._id);
 
-  res.status(200).json({ data: jobs });
-});
+    res.status(200).json({ data: jobs });
+  }
+);
 
-export const getJob = asyncHandler(async (req: Request, res: Response) => {
-  const job = await JobServices.getJobByID(req.params.id);
+export const getJob = asyncHandler(
+  async (req: IAuthorizedUserRequest, res: Response) => {
+    const job = await JobServices.getJobByID(req.params.id, req.user?._id);
 
-  res.status(200).json({ data: job });
-});
+    res.status(200).json({ data: job });
+  }
+);
 
 export const createJob = asyncHandler(
   async (req: IAuthorizedUserRequest, res: Response) => {
@@ -25,7 +29,11 @@ export const createJob = asyncHandler(
 
 export const updateJob = asyncHandler(
   async (req: IAuthorizedUserRequest, res: Response) => {
-    const job = await JobServices.updateJob(req.params.id, req.body);
+    const job = await JobServices.updateJob(
+      req.params.id,
+      req.body,
+      req.user?._id
+    );
 
     res.status(200).json({ data: job });
   }

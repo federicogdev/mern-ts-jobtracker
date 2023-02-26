@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import UserModel from "../models/user-model";
-import checkIsValidObjectID from "../util/check-is-valid-object-id";
 import { IUserType, IUserSchema, IUserReturnType } from "../types/user-types";
 import { generateToken } from "../util/generate-token";
 import HttpException from "../util/http-exception";
@@ -19,15 +18,15 @@ export const registerUser = async (
   const { email, password, username, location } = user;
 
   if (!email) {
-    throw new Error("Email required.");
+    throw new HttpException("Email required.", 400);
   }
 
   if (!password) {
-    throw new Error("Password required.");
+    throw new HttpException("Password required.", 400);
   }
 
   if (!username) {
-    throw new Error("Username required.");
+    throw new HttpException("Username required.", 400);
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -48,7 +47,7 @@ export const registerUser = async (
       token: generateToken({ _id: newUser._id }),
     };
   } catch (error) {
-    throw new Error("User not created.");
+    throw new HttpException("User not created.", 400);
   }
 };
 
@@ -57,24 +56,24 @@ export const loginUser = async (
   password: string
 ): Promise<IUserReturnType> => {
   if (!email) {
-    throw new Error("Email required.");
+    throw new HttpException("Email required.", 400);
   }
 
   if (!password) {
-    throw new Error("Password required.");
+    throw new HttpException("Password required.", 400);
   }
 
   try {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new HttpException("User not found", 400);
     }
 
     const passwordValid = await bcrypt.compare(password, user.password);
 
     if (!passwordValid) {
-      throw new Error("Password is invalid.");
+      throw new HttpException("Password is invalid.", 400);
     }
 
     return {
@@ -85,6 +84,6 @@ export const loginUser = async (
       token: generateToken({ _id: user._id }),
     };
   } catch (error) {
-    throw new Error("User not found.");
+    throw new HttpException("User not found.", 400);
   }
 };
