@@ -12,7 +12,7 @@ export enum JobStatusEnum {
 }
 
 export interface IJobType {
-  // userId: string;
+  userId: string;
   position: string;
   company: string;
   status: JobStatusEnum;

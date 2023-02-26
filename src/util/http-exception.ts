@@ -10,3 +10,18 @@ export default class HttpException extends Error {
     this.error = error ?? null;
   }
 }
+
+export const ErrorHandler = (error: unknown): HttpException => {
+  // Check error Type
+  if (!(error instanceof Error)) {
+    throw new HttpException("Encountered unknown error type", 500);
+  }
+
+  // Check for known errors
+  if (error.message.includes("E11000")) {
+    throw new HttpException("Object with that ID already exists", 500);
+  }
+
+  // Catch all unknown / unthought of errors
+  throw new HttpException("Unknown error occurred", 500);
+};

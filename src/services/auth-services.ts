@@ -27,7 +27,7 @@ export const registerUser = async (
   }
 
   if (!username) {
-    throw new Error("First Name required.");
+    throw new Error("Username required.");
   }
 
   const salt = await bcrypt.genSalt(10);
