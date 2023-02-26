@@ -30,7 +30,7 @@ export const isAuth = asyncHandler(
     const user = await UserModel.findById(decoded._id);
 
     if (!user) {
-      throw new HttpException("User not found", 404);
+      throw new HttpException("Unauthorized", 401);
     }
 
     req.user = user;

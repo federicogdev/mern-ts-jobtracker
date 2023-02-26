@@ -103,16 +103,29 @@ export const updateJob = async (
   }
 };
 
-export const deleteJob = async (jobID: string): Promise<void> => {
+export const deleteJob = async (
+  jobID: string,
+  userId: string | undefined
+): Promise<void> => {
   checkIsValidObjectID(jobID);
 
+  if (!userId) {
+    throw new HttpException("UserId is undefined", 400);
+  }
+
+  checkIsValidObjectId(userId);
+
+  const job = await JobModel.findById(jobID);
+
+  if (!job) {
+    throw new HttpException(`Job with ${jobID} ID not found.`, 404);
+  }
+
+  if (job.userId !== userId) {
+    throw new HttpException("Unauthorized", 404);
+  }
+
   try {
-    const job = await JobModel.findById(jobID);
-
-    if (!job) {
-      throw new HttpException(`Job with ${jobID} ID not found.`, 404);
-    }
-
     await job.remove();
 
     return;

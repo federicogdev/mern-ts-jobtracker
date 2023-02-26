@@ -33,7 +33,7 @@ export const updateJob = asyncHandler(
 
 export const deleteJob = asyncHandler(
   async (req: IAuthorizedUserRequest, res: Response) => {
-    await JobServices.deleteJob(req.params.id);
+    await JobServices.deleteJob(req.params.id, req.user?._id);
 
     res.status(200).json({ message: `Deleted Job ${req.params.id}.` });
   }
