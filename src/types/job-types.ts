@@ -23,3 +23,19 @@ export interface IJobType {
 export interface IJobSchema extends IJobType {
   _id: string;
 }
+
+export interface IJobStats {
+  pending: number;
+  interview: number;
+  declined: number;
+}
+
+export interface IJobMonthlyApplication {
+  date: string;
+  count: number;
+}
+
+export interface IJobStatsResponse {
+  defaultStats: IJobStats;
+  monthlyApplications: IJobMonthlyApplication[];
+}

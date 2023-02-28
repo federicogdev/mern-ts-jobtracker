@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import UserModel from "../models/user-model";
 import { IUserType, IUserSchema, IUserReturnType } from "../types/user-types";
 import { generateToken } from "../util/generate-token";
-import HttpException from "../util/http-exception";
+import HttpException, { ErrorHandler } from "../util/http-exception";
 
 interface IRegisterResponse {
   _id: string;
@@ -29,6 +29,12 @@ export const registerUser = async (
     throw new HttpException("Username required.", 400);
   }
 
+  const userExists = await UserModel.findOne({ email });
+
+  if (userExists) {
+    throw new HttpException("Email already taken.", 400);
+  }
+
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
@@ -47,7 +53,7 @@ export const registerUser = async (
       token: generateToken({ _id: newUser._id }),
     };
   } catch (error) {
-    throw new HttpException("User not created.", 400);
+    throw ErrorHandler(error);
   }
 };
 
@@ -84,6 +90,6 @@ export const loginUser = async (
       token: generateToken({ _id: user._id }),
     };
   } catch (error) {
-    throw new HttpException("User not found.", 400);
+    throw ErrorHandler(error);
   }
 };

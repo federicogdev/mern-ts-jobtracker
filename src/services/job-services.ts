@@ -1,6 +1,13 @@
+import moment from "moment";
 import mongoose from "mongoose";
 import JobModel from "../models/job-model";
-import { IJobType, IJobSchema } from "../types/job-types";
+import {
+  IJobType,
+  IJobSchema,
+  IJobStats,
+  IJobStatsResponse,
+  IJobMonthlyApplication,
+} from "../types/job-types";
 import checkIsValidObjectId from "../util/check-is-valid-object-id";
 import checkIsValidObjectID from "../util/check-is-valid-object-id";
 import HttpException, { ErrorHandler } from "../util/http-exception";
@@ -167,6 +174,72 @@ export const deleteJob = async (
     await job.remove();
 
     return;
+  } catch (error) {
+    throw ErrorHandler(error);
+  }
+};
+
+export const getJobStats = async (
+  userId: string | undefined
+): Promise<IJobStatsResponse> => {
+  if (!userId) {
+    throw new HttpException("UserId is undefined", 400);
+  }
+
+  checkIsValidObjectId(userId);
+
+  try {
+    const aggregatedStats = await JobModel.aggregate([
+      { $match: { userId: userId.valueOf() } },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]);
+
+    const aggregatedMonthlyApplications = await JobModel.aggregate([
+      { $match: { userId: userId.valueOf() } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": -1, "_id.month": -1 } },
+      { $limit: 6 },
+    ]);
+
+    const stats: IJobStats = aggregatedStats.reduce((acc, curr) => {
+      const { _id: title, count } = curr;
+
+      acc[title] = count;
+
+      return acc;
+    }, {});
+
+    const defaultStats = {
+      pending: stats.pending || 0,
+      interview: stats.interview || 0,
+      declined: stats.declined || 0,
+    };
+
+    const monthlyApplications: IJobMonthlyApplication[] =
+      aggregatedMonthlyApplications
+        .map((item) => {
+          const {
+            _id: { year, month },
+            count,
+          } = item;
+
+          const date = moment()
+            .month(month - 1)
+            .year(year)
+            .format("MMM Y");
+          return { date, count };
+        })
+        .reverse();
+
+    return { defaultStats, monthlyApplications };
   } catch (error) {
     throw ErrorHandler(error);
   }
