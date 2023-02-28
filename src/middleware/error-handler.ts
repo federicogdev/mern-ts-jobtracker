@@ -13,7 +13,6 @@ const errorHandler = (
 
   res.status(status).json({
     error: message,
-    stack: env.NODE_ENV === "production" ? null : err.stack,
   });
 };
 
