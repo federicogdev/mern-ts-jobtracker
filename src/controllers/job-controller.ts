@@ -3,13 +3,12 @@ import asyncHandler from "express-async-handler";
 import { IAuthorizedUserRequest } from "../middleware/auth-middleware";
 import * as JobServices from "../services/job-services";
 
-interface IAuthorizedUserGetJobsRequest extends IAuthorizedUserRequest {
-  query: { porco: string };
-}
-
 export const getJobs = asyncHandler(
-  async (req: IAuthorizedUserGetJobsRequest, res: Response) => {
-    const jobs = await JobServices.getJobs(req.user?._id);
+  async (req: IAuthorizedUserRequest, res: Response) => {
+    const { query } = req;
+    const limit = query?.limit as string;
+    const page = query?.page as string;
+    const jobs = await JobServices.getJobs(req.user?._id, limit, page);
 
     res.status(200).json({ data: jobs });
   }

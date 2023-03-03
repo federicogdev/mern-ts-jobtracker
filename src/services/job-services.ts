@@ -13,7 +13,9 @@ import checkIsValidObjectID from "../util/check-is-valid-object-id";
 import HttpException, { ErrorHandler } from "../util/http-exception";
 
 export const getJobs = async (
-  userId: string | undefined
+  userId: string | undefined,
+  limit?: string,
+  page?: string
 ): Promise<IJobSchema[]> => {
   if (!userId) {
     throw new HttpException("UserId is undefined", 400);
@@ -22,9 +24,14 @@ export const getJobs = async (
   checkIsValidObjectId(userId);
 
   try {
-    const jobs = JobModel.find({ userId });
+    let jobs = JobModel.find();
 
-    return jobs;
+    const _page = Number(page) || 1;
+    const _limit = Number(limit) || 10;
+    const skip = (_page - 1) * _limit;
+
+    // return jobs
+    return jobs.skip(skip).limit(_limit);
   } catch (error) {
     throw ErrorHandler(error);
   }
