@@ -24,7 +24,7 @@ export const getJobs = async (
   checkIsValidObjectId(userId);
 
   try {
-    let jobs = JobModel.find();
+    let jobs = JobModel.find({ userId });
 
     const _page = Number(page) || 1;
     const _limit = Number(limit) || 10;

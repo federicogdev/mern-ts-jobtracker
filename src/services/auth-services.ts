@@ -36,6 +36,7 @@ export const registerUser = async (
   }
 
   const salt = await bcrypt.genSalt(10);
+
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
     const newUser = await UserModel.create({
@@ -73,7 +74,7 @@ export const loginUser = async (
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw new HttpException("User not found", 400);
+      throw new HttpException("Email not registered.", 400);
     }
 
     const passwordValid = await bcrypt.compare(password, user.password);
