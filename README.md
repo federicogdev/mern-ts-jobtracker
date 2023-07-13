@@ -5,7 +5,7 @@ A Job tracking API with User Auth and simple CRUD operations
 ## Installation & Run
 
 ```bash
-# Clone this repo
+# Clone the repo
 git clone https://github.com/federicogdev/mern-ts-jobtracker.git
 ```
 
