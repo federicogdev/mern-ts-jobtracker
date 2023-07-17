@@ -6,7 +6,7 @@ A Job tracking API with User Auth and simple CRUD operations
 
 ```bash
 # Clone the repo
-git clone https://github.com/federicogdev/mern-ts-jobtracker.git
+git clone http://github.com/federicogdev/mern-ts-jobtracker.git
 ```
 
 Before running API server, make sure to create a .env file in the root directory of the project.
